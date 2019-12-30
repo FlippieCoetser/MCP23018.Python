@@ -13,7 +13,8 @@ pip install hidapi
 pip install adafruit-blinka
 ```
 
-Note: follow [here](https://learn.adafruit.com/circuitpython-libraries-on-any-computer-with-mcp2221/overview) for instructions how to setup you environment to use the USB I2C Click
+Note: click [here](https://learn.adafruit.com/circuitpython-libraries-on-any-computer-with-mcp2221/overview) for instructions how to setup your environment to use the USB I2C Click with circuitpython
 
-**This library is work in progress**
+**This library is work in progress**  
+
 The test.py file contains some example code which has been tested on windows 10
