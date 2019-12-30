@@ -1,2 +1,19 @@
 # Python.MCP23018
-Python Driver for MCP23018
+Python Driver for Microchip MCP23018 16-bit I/O Expander with Open-Drain Outputs
+
+### Dependencies
+Boards: USB I2C Click  
+Libraries: 
+1. hidapi
+```
+pip install hidapi
+```
+2. blinka
+```
+pip install adafruit-blinka
+```
+
+Note: follow [here](https://learn.adafruit.com/circuitpython-libraries-on-any-computer-with-mcp2221/overview) for instructions how to setup you environment to use the USB I2C Click
+
+**This library is work in progress**
+The test.py file contains some example code which has been tested on windows 10
