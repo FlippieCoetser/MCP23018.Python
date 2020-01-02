@@ -10,9 +10,11 @@ class State(Enum):
 
 class MCP23018:
     I2C_ADDRESS = 0x20
+    
     class port(Enum):
         A = 0x00
         B = 0x01
+    
     class register(Enum): 
         IODIRA = 0x00
         IODIRB = 0x01
@@ -36,6 +38,25 @@ class MCP23018:
         GPIOB = 0x13
         OLATA = 0x14
         OLATB = 0x15
+
+    class pins(Enum):
+        GPB0 = 3
+        GPB1 = 4
+        GPB2 = 5
+        GPB3 = 6
+        GPB4 = 7
+        GPB5 = 8
+        GPB6 = 9
+        GPB7 = 10
+        GPA0 = 20
+        GPA1 = 21
+        GPA2 = 22
+        GPA3 = 23
+        GPA4 = 34
+        GPA5 = 35
+        GPA6 = 36
+        GPA7 = 37
+
     def __init__(self, reset_pin, i2c):
         self.reset_pin = reset_pin
         self.i2c = i2c
