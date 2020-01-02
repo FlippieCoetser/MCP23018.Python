@@ -21,20 +21,28 @@ pin.direction = digitalio.Direction.OUTPUT
 # The I2C interface is used to operate the MCP23018
 i2c = busio.I2C(board.SCL, board.SDA)
 
-# Load the G0 pind and the i2c interface into MCP2308
-from MCP23018 import MCP23018
+# Load Libraries
+from MCP23018 import MCP23018, Direction, State
+
+# Load the G0 pin and the i2c interface into MCP2308
 mcp23018 = MCP23018(reset_pin = pin, i2c = i2c)
 
-# Configure MCP23018 Port A Pins as output
-mcp23018.configure_port_a()
+# Configure MCP23018 Port A and Port B Pins as output
+mcp23018.configure_gpio(mcp23018.port.A, Direction.OUT)
+mcp23018.configure_gpio(mcp23018.port.B, Direction.OUT)
 
-# Wait one second and toggle the Port A Pins state, three times
+# Wait one second then toggle gpio pins state, three times
 time.sleep(1)
-mcp23018.set_port_a_high()
+mcp23018.set_gpio(mcp23018.port.A, State.HIGH)
 time.sleep(1)
-mcp23018.set_port_a_low()
+mcp23018.set_gpio(mcp23018.port.B, State.HIGH)
 time.sleep(1)
-mcp23018.set_port_a_high()
-
+mcp23018.set_gpio(mcp23018.port.A, State.LOW)
+time.sleep(1)
+mcp23018.set_gpio(mcp23018.port.B, State.LOW)
+time.sleep(1)
+mcp23018.set_gpio(mcp23018.port.A, State.HIGH)
+time.sleep(1)
+mcp23018.set_gpio(mcp23018.port.B, State.HIGH)
 
 
