@@ -1,5 +1,5 @@
-# Python.MCP23018
-Python Driver for Microchip MCP23018 16-bit I/O Expander with Open-Drain Outputs
+# MCP23018.Python
+Python Library for Microchip MCP23018 16-bit I/O Expander with Open-Drain Outputs
 
 ### Dependencies
 Boards: USB I2C Click  
