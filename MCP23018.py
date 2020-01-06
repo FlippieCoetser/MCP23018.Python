@@ -355,13 +355,13 @@ class GPIO:
         self.reset()
     
     def load_ports(self, device):
-        self.Ports = {}
+        self.Port = {}
         for port in device.PORTS:
-            self.Ports[port] = Port(device, port)
+            self.Port[port] = Port(device, port)
 
     def reset(self):
-        for port in self.Ports:
-            self.Ports[port].reset()
+        for port in self.Port:
+            self.Port[port].reset()
         return self.device
 
     def set_direction(self, direction):
@@ -369,11 +369,11 @@ class GPIO:
         Fluent API to set Direction of all GPIO Pins
         """
         if direction == Direction.IN:
-            for port in self.Ports:
-                self.Ports[port].direction = Direction.IN
+            for port in self.Port:
+                self.Port[port].direction = Direction.IN
         if direction == Direction.OUT:
-            for port in self.Ports:
-                self.Ports[port].direction = Direction.OUT
+            for port in self.Port:
+                self.Port[port].direction = Direction.OUT
         return self.device
     
     def set_value(self, state):
@@ -381,11 +381,11 @@ class GPIO:
         Fluent API to set the State of all GPIO Pins
         """
         if state == State.LOW:
-            for port in self.Ports:
-                self.Ports[port].value = State.LOW
+            for port in self.Port:
+                self.Port[port].value = State.LOW
         if state == State.HIGH:
-            for port in self.Ports:
-                self.Ports[port].value = State.HIGH
+            for port in self.Port:
+                self.Port[port].value = State.HIGH
         return self.device
 
 class MCP23018:

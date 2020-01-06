@@ -41,17 +41,17 @@ mcp23018.GPIO.set_value(State.LOW)
 #### Port Level
 1. Set Direction of all GPIO Pins on specific Port (A or B)
 ```python
-mcp23018.GPIO.Ports["A"].direction = Direction.OUT
+mcp23018.GPIO.Port["A"].direction = Direction.OUT
 ```
 2. Set State of all GPIO Pins on specific Port (A or B)
 ```python
-mcp23018.GPIO.Ports["A"].value = State.LOW
+mcp23018.GPIO.Port["A"].value = State.LOW
 ```
 
 #### Pin Level
 1. Set State of a specific Pin
 ```python
-mcp23018.GPIO.Ports["A"].Pin["GP0"].value = State.LOW
+mcp23018.GPIO.Port["A"].Pin["GP0"].value = State.LOW
 ```
 
 ### Fluent API
@@ -60,24 +60,24 @@ See the below example, which should speak for itself:
 
 ```python
 (mcp23018
-.reset()
-.wait(1)
+    .reset()
+    .wait(1)
     .GPIO.set_value(State.HIGH)
     .GPIO.set_direction(Direction.OUT)
-.wait(1)
+    .wait(1)
     .GPIO.set_value(State.LOW)
-.wait(1)
+    .wait(1)
     .GPIO.set_value(State.HIGH)
-.wait(1)
-    .GPIO.Ports["A"].set_value(State.LOW)
-.wait(1)
-    .GPIO.Ports["B"].set_value(State.LOW)
-.wait(1)
-    .GPIO.Ports["A"].set_value(State.HIGH)
-.wait(1)
-    .GPIO.Ports["B"].set_value(State.HIGH)
-.wait(1)
-    .GPIO.Ports["A"]
+    .wait(1)
+    .GPIO.Port["A"].set_value(State.LOW)
+    .wait(1)
+    .GPIO.Port["B"].set_value(State.LOW)
+    .wait(1)
+    .GPIO.Port["A"].set_value(State.HIGH)
+    .wait(1)
+    .GPIO.Port["B"].set_value(State.HIGH)
+    .wait(1)
+    .GPIO.Port["A"]
         .Pin["GP0"].set_value(State.LOW)
         .Pin["GP1"].set_value(State.LOW)
         .Pin["GP2"].set_value(State.LOW)
@@ -87,7 +87,7 @@ See the below example, which should speak for itself:
         .Pin["GP6"].set_value(State.LOW)
         .Pin["GP7"].set_value(State.LOW)
 .exist()
-    .GPIO.Ports["B"]
+    .GPIO.Port["B"]
         .Pin["GP0"].set_value(State.LOW)
         .Pin["GP1"].set_value(State.LOW)
         .Pin["GP2"].set_value(State.LOW)
@@ -97,7 +97,7 @@ See the below example, which should speak for itself:
         .Pin["GP6"].set_value(State.LOW)
         .Pin["GP7"].set_value(State.LOW)
 .exist()
-    .GPIO.Ports["A"]
+    .GPIO.Port["A"]
         .Pin["GP0"].set_value(State.HIGH)
         .Pin["GP1"].set_value(State.HIGH)
         .Pin["GP2"].set_value(State.HIGH)
@@ -107,7 +107,7 @@ See the below example, which should speak for itself:
         .Pin["GP6"].set_value(State.HIGH)
         .Pin["GP7"].set_value(State.HIGH)
 .exist()
-    .GPIO.Ports["B"]
+    .GPIO.Port["B"]
         .Pin["GP0"].set_value(State.HIGH)
         .Pin["GP1"].set_value(State.HIGH)
         .Pin["GP2"].set_value(State.HIGH)
