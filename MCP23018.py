@@ -241,16 +241,58 @@ class Register:
 # Functionality
 #-------------------------------------------------
 
+class Pin:
+    def __init__(self, id, address, port):
+        self.id = id
+        self.address = address
+        self.port = port
+        self.device = port.device
+    
+    def set_value(self, state):
+        self.value = state
+        return self.port
+
+    @property
+    def value(self):
+        return  "TODO: Return Pin State"
+
+    @value.setter
+    def value(self, state):
+        if State.HIGH == state:
+            state_new = (0xff & self.address)
+        if State.LOW == state:
+            state_new = 0x00
+        state_current = self.device.Registers.Bank[self.device.BANK][self.port.id].OLAT
+        state_current = (state_current & ~self.address)
+        data = (state_new | state_current)
+        self.device.Registers.Bank[self.device.BANK][self.port.id].GPIO = data
+
 class Port:
     def __init__(self, device, id):
         self.id = id
         self.device = device
         self.reset()
+        self.load_pins()
+    
+    def load_pins(self):
+        self.Pin = {}
+        self.Pin["GP0"] = Pin("GP0",0b00000001, self)
+        self.Pin["GP0"] = Pin("GP0",0b00000001, self)
+        self.Pin["GP1"] = Pin("GP1",0b00000010, self)
+        self.Pin["GP2"] = Pin("GP2",0b00000100, self)
+        self.Pin["GP3"] = Pin("GP3",0b00001000, self)
+        self.Pin["GP4"] = Pin("GP4",0b00010000, self)
+        self.Pin["GP5"] = Pin("GP5",0b00100000, self)
+        self.Pin["GP6"] = Pin("GP6",0b01000000, self)
+        self.Pin["GP7"] = Pin("GP7",0b10000000, self)
 
     def reset(self):
         self._direction = Direction.IN
         self._value = State.LOW
         return
+
+    def exist(self):
+        return self.device
         
     def set_direction(self, direction):
         """
