@@ -32,11 +32,11 @@ mcp23018.wait(duration)
 #### GPIO Level
 1. Set Direction of all GPIO Pins
 ```python
-mcp23018.GPIO.direction = Direction.OUT
+mcp23018.GPIO.set_direction(Direction.OUT)
 ```
 2. Set State of all GPIO Pins
 ```python
-mcp23018.GPIO.value = State.LOW
+mcp23018.GPIO.set_value(State.LOW)
 ```
 #### Port Level
 1. Set Direction of all GPIO Pins on specific Port (A or B)

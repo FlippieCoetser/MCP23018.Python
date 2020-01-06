@@ -23,18 +23,18 @@ i2c = busio.I2C(board.SCL, board.SDA)
 
 # Load the G0 pin and the i2c interface into MCP2308
 from MCP23018 import MCP23018, State, Direction
-mcp23018 = MCP23018(reset_pin = pin, i2c = i2c)
+mcp23018 = MCP23018(reset_pin = pin, i2c_interface = i2c)
 
 # GPIO Level 
 # Traditional API
 mcp23018.reset()
 mcp23018.wait(1)
-mcp23018.GPIO.value = State.HIGH
-mcp23018.GPIO.direction = Direction.OUT
+mcp23018.GPIO.set_value(State.HIGH)
+mcp23018.GPIO.set_direction(Direction.OUT)
 mcp23018.wait(1)
-mcp23018.GPIO.value = State.LOW
+mcp23018.GPIO.set_value(State.LOW)
 mcp23018.wait(1)
-mcp23018.GPIO.value = State.HIGH
+mcp23018.GPIO.set_value(State.HIGH)
 
 # Fluent API
 # pylint: disable=maybe-no-member
