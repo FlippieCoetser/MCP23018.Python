@@ -25,6 +25,12 @@ mcp23018 = MCP23018(RESET_Pin = pin, I2C_Interface=I2C)
 mcp23018.reset()
 mcp23018.wait(1)
 
+# Debug Flags
+mcp23018.RESET.debug = True
+mcp23018.I2C.debug = True
+mcp23018.Configuration.debug = True
+mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].debug = True
+
 #Configure GPIO at OUTPUT
 mcp23018.GPIO.value = STATE.HIGH
 mcp23018.GPIO.direction = DIRECTION.OUT
@@ -84,21 +90,18 @@ mcp23018.wait(1)
 
 # Set and Get GPIO PIN
 mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value = STATE.LOW
-print("MCP23018 GPIO - Read PORT.B PIN.GP5: ", mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value)
+value = mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value
 mcp23018.wait(1)
 mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value = STATE.HIGH
-print("MCP23018 GPIO - Read PORT.B PIN.GP5: ", mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value)
+value = mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value
 mcp23018.wait(1)
 
 # Set and Get Configuration and Test
-print("MCP23018 CONFIG - Read bank: ", mcp23018.Configuration.bank)
+bank = mcp23018.Configuration.bank
 mcp23018.Configuration.bank = PARAMETERS[PARAMETER.BANK].SEPARATE
-print("MCP23018 CONFIG - Read bank: ", mcp23018.Configuration.bank)
+bank = mcp23018.Configuration.bank
 mcp23018.wait(1)
 mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value = STATE.LOW
 mcp23018.wait(1)
 mcp23018.GPIO.port[PORT.B].pin[PIN.GP5].value = STATE.HIGH
 mcp23018.wait(1)
-
-
-
