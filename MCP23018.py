@@ -22,19 +22,18 @@ class I2C:
         description
     """
 
-    _address = None
-    _interface = None
     """
     External device I2C Interface connected to SCL and SDA pins on MCP23018
     """
     def __init__(self, I2C_Interface, I2C_Address):
         self._interface = I2C_Interface()
-        self.address = I2C_Address
+        self._address = I2C_Address
+        self.debug = False
         
     def write(self, register, data):
         address = register.value
         self._interface.writeto(self._address.value, bytes([address, data]))
-        print("I2C Interface - Write"," Register: ", register, "[",address, "] Data: ", data)
+        self._log("write",register, data)
         return
     def read(self, register):
         address = register.value
@@ -42,7 +41,7 @@ class I2C:
         self._interface.writeto(self._address.value, bytes([address]))
         self._interface.readfrom_into(self._address.value, data)
         data = int.from_bytes(data,"big")
-        print("I2C Interface - Read "," Register: " , register, "[",address, "] Data: ", data)
+        self._log("read ", register, data)
         return data
     
     @property
@@ -55,6 +54,12 @@ class I2C:
         if address not in I2C_ADDRESS_RANGE:
             raise Exception("Invalid I2C Address!")
         self._address = address
+    
+    def _log(self, type, register, data):
+        if self.debug:
+            print("I2C Interface - Type: ", type, " Register: ", register, "[", register.value, "] Data: ", data )
+        return
+
 
 # TODO: Refactor MCP2221; Implement standard PIN Class
 class RESET_PIN:
@@ -66,19 +71,25 @@ class RESET_PIN:
     def __init__(self, reset_pin):
         self._gpio = reset_pin
         self._state = STATE.HIGH
+        self.debug = False
 
     @property
     def value(self):
         return self._state
     @value.setter
     def value(self, value):
-        print("RESET - state: ",value)
         if value == STATE.HIGH:
             self._gpio.value = True
             self._state = STATE.HIGH
         if value == STATE.LOW:
             self._gpio.value = False
             self._state = STATE.LOW
+        self._log(value)
+    
+    def _log(self, state):
+        if self.debug:
+            print("RESET - State: ", state)
+        return
 
 class DIRECTION(Enum):
     IN = 0b1
@@ -117,14 +128,14 @@ class PORT(Enum):
     B = 'B'
 
 class PIN(Enum):
-    GP0 = 'GP0'
-    GP1 = 'GP1'
-    GP2 = 'GP2'
-    GP3 = 'GP3'
-    GP4 = 'GP4'
-    GP5 = 'GP5'
-    GP6 = 'GP6'
-    GP7 = 'GP7'
+    GP0 = 0
+    GP1 = 1
+    GP2 = 2
+    GP3 = 3
+    GP4 = 4
+    GP5 = 5
+    GP6 = 6
+    GP7 = 7
 
 class PARAMETER(Enum):
     INTCC = 'INTCC'
@@ -502,12 +513,15 @@ class Configuration:
     def __init__(self, device):
         self._device = device
         self._register = device.registers.port[PORT.A]
+        self.debug = False
 
     @property
     def bank(self):
         bit = 7
         value = Pin.READ(self._register.IOCON, bit)
-        return PARAMETERS[PARAMETER.BANK](value)
+        value = PARAMETERS[PARAMETER.BANK](value)
+        self._log("read ",PARAMETER.BANK, value)
+        return value
     @bank.setter
     def bank(self, config):
         bit = 7
@@ -519,12 +533,15 @@ class Configuration:
                 self._load_ports(BANK.ZERO)
         else:
             raise Exception("Invalid configuration!")
+        self._log("write", PARAMETER.BANK, config)
     
     @property
     def mirror(self):
         bit = 6
         value = Pin.READ(self._register.IOCON, bit)
-        return PARAMETERS[PARAMETER.MIRRIOR](value)
+        value = PARAMETERS[PARAMETER.MIRRIOR](value)
+        self._log("read ", PARAMETER.MIRRIOR, value)
+        return value
     @mirror.setter
     def mirror(self, config):
         bit = 6
@@ -532,12 +549,15 @@ class Configuration:
             self._register.IOCON = Pin.WRITE(self._register.IOCON, config.value, bit)
         else:
             raise Exception("Invalid configuration!")
+        self._log("write", PARAMETER.MIRRIOR, config)
     
     @property
     def seqop(self):
         bit = 5
         value = Pin.READ(self._register.IOCON, bit)
-        return PARAMETERS[PARAMETER.SEQOP](value)
+        value = PARAMETERS[PARAMETER.SEQOP](value)
+        self._log("read ", PARAMETER.SEQOP, value)
+        return value
     @seqop.setter
     def seqop(self, config):
         bit = 5
@@ -545,12 +565,15 @@ class Configuration:
             self._register.IOCON = Pin.WRITE(self._register.IOCON, config.value, bit)
         else:
             raise Exception("Invalid configuration!")
+        self._log("write", PARAMETER.SEQOP, config)
 
     @property
     def odr(self):
         bit = 2
         value = Pin.READ(self._register.IOCON, bit)
-        return PARAMETERS[PARAMETER.ODR](value)
+        value = PARAMETERS[PARAMETER.ODR](value)
+        self._log("read ", PARAMETER.ODR, value)
+        return value
     @odr.setter
     def odr(self, config):
         bit = 2
@@ -558,12 +581,15 @@ class Configuration:
             self._register.IOCON = Pin.WRITE(self._register.IOCON, config.value, bit)
         else:
             raise Exception("Invalid configuration!")
+        self._log("write", PARAMETER.ODR, config)
     
     @property
     def intpol(self):
         bit = 1
         value = Pin.READ(self._register.IOCON, bit)
-        return PARAMETERS[PARAMETER.INTPOL](value)
+        value = PARAMETERS[PARAMETER.INTPOL](value)
+        self._log("read ", PARAMETER.INTPOL, value)
+        return value
     @intpol.setter
     def intpol(self, config):
         bit = 1
@@ -571,12 +597,15 @@ class Configuration:
             self._register.IOCON = Pin.WRITE(self._register.IOCON, config.value, bit)
         else:
             raise Exception("Invalid configuration!")
+        self._log("write", PARAMETER.INTPOL, config)
 
     @property
     def intcc(self):
         bit = 0
         value = Pin.READ(self._register.IOCON, bit)
-        return PARAMETERS[PARAMETER.INTCC](value)
+        value = PARAMETERS[PARAMETER.INTCC](value)
+        self._log("read ", PARAMETER.INTCC, value)
+        return value
     @intcc.setter
     def intcc(self, config):
         bit = 0
@@ -584,17 +613,25 @@ class Configuration:
             self._register.IOCON = Pin.WRITE(self._register.IOCON, config.value, bit)
         else:
             raise Exception("Invalid configuration!")
+        self._log("write", PARAMETER.INTCC, config)
 
     def _load_ports(self,bank):
         self._device.registers.bank = bank
         self._device.registers.load_ports()
         self._device.GPIO.load_ports()
 
+    def _log(self, type, parameter, value):
+        if self.debug:
+            print("MCP23018 CONFIG - Type: ", type, " Parameter: ", parameter, " Value: ", value)
+        return
+
     def reset(self):
         """
         Default Memory Bank in use after device reset is BANK.ZERO
         """
         self._device.registers.Bank = BANK.ZERO
+    
+
 
 class Pin:
     """
@@ -628,8 +665,9 @@ class Pin:
         description
     """
     def __init__(self, id, register):
-        self._id = id
+        self._id = id.value
         self._register = register
+        self.debug = False
  
     WRITE = lambda current, new, bit: current & ~(0b1 << bit) | (new << bit) & (0b1 << bit)
     """
@@ -646,10 +684,13 @@ class Pin:
         Get or set pin direction: Direction.IN or Direction.OUT
         """
         direction = Pin.READ(self._register.IODIR, self._id)
-        return  DIRECTION(direction)
+        direction = DIRECTION(direction)
+        self._log("read ", direction)
+        return direction 
     @direction.setter
     def direction(self, direction):
         self._register.IODIR = Pin.WRITE(self._register.IODIR, direction.value, self._id)
+        self._log("write", direction)
 
     @property
     def value(self):
@@ -658,13 +699,23 @@ class Pin:
         """
         if self.direction == DIRECTION.IN:
             register = self._register.GPIO
-            return STATE(Pin.READ(register, self._id))
+            state = STATE(Pin.READ(register, self._id))
+            self._log("read ",state)
+            return state
         else:
             register = self._register.OLAT
-            return STATE(Pin.READ(register, self._id))
+            state = STATE(Pin.READ(register, self._id))
+            self._log("read ",state)
+            return state
     @value.setter
     def value(self, state):
         self._register.GPIO = Pin.WRITE(self._register.OLAT, state.value, self._id)
+        self._log("write", state)
+
+    def _log(self, type, value):
+        if self.debug:
+            print("MCP23018 GPIO PIN ", self._id, "- Type: ", type, " Value: ", value)
+        return
     
 class Port:
     """
@@ -713,14 +764,14 @@ class Port:
         Load the pin dicionary with each ping defined in ENUM PIN
         """
         self.pin = {}
-        self.pin[PIN.GP0] = Pin(0, self._register)
-        self.pin[PIN.GP1] = Pin(1, self._register)
-        self.pin[PIN.GP2] = Pin(2, self._register)
-        self.pin[PIN.GP3] = Pin(3, self._register)
-        self.pin[PIN.GP4] = Pin(4, self._register)
-        self.pin[PIN.GP5] = Pin(5, self._register)
-        self.pin[PIN.GP6] = Pin(6, self._register)
-        self.pin[PIN.GP7] = Pin(7, self._register)
+        self.pin[PIN.GP0] = Pin(PIN.GP0, self._register)
+        self.pin[PIN.GP1] = Pin(PIN.GP1, self._register)
+        self.pin[PIN.GP2] = Pin(PIN.GP2, self._register)
+        self.pin[PIN.GP3] = Pin(PIN.GP3, self._register)
+        self.pin[PIN.GP4] = Pin(PIN.GP4, self._register)
+        self.pin[PIN.GP5] = Pin(PIN.GP5, self._register)
+        self.pin[PIN.GP6] = Pin(PIN.GP6, self._register)
+        self.pin[PIN.GP7] = Pin(PIN.GP7, self._register)
     
     @property
     def size(self):
@@ -734,6 +785,7 @@ class Port:
         """
         Read data in IODIR register
         """
+        # TODO: Refactor to loop through Pins
         iodir = self._register.IODIR
         if iodir == 0b11111111:
             return DIRECTION(0b1)
@@ -747,6 +799,7 @@ class Port:
         """
         Write data to IODIR register
         """
+        # TODO: Refactor to loop through Pins
         self._register.IODIR = direction.value * self.size
 
     @property
@@ -754,6 +807,7 @@ class Port:
         """
         Read data in GPIO register
         """
+        # TODO: Refactor to loop through Pins
         if self.direction == DIRECTION.IN:
             state = self._register.GPIO
             return bin(state)
@@ -766,6 +820,7 @@ class Port:
         """
         Write data to GPIO register
         """
+        # TODO: Refactor to loop through Pins
         if isinstance(state, STATE):
             self._register.GPIO = state.value * self.size
         elif isinstance(state, int):
@@ -895,6 +950,6 @@ class MCP23018:
 
     def wait(self, duration):
         """
-        Use external library to Wait for a specified number of miliseconds
+        Use external library to Wait for a specified number of seconds
         """
         time.sleep(duration)
