@@ -60,14 +60,11 @@ class I2C:
             print("I2C Interface - Type: ", type, " Register: ", register, "[", register.value, "] Data: ", data )
         return
 
-
 # TODO: Refactor MCP2221; Implement standard PIN Class
 class RESET_PIN:
-    _gpio = None
     """
     External device GPIO Pin connected to the RESET pin on MCP23018
     """
-    _state = None
     def __init__(self, reset_pin):
         self._gpio = reset_pin
         self._state = STATE.HIGH
@@ -756,12 +753,16 @@ class Port:
         set the value of all pins on port
     """
     def __init__(self, register):
+        """
+        Load private register property with the address of each register based on the current mode and memory bank in operation
+        Create a new pin for each PIN in enum and load into local pin dictionary
+        """
         self._register = register
         self.load_pins()
 
     def load_pins(self):
         """
-        Load the pin dicionary with each ping defined in ENUM PIN
+        Create a new pin for each PIN in enum and load into local pin dictionary
         """
         self.pin = {}
         self.pin[PIN.GP0] = Pin(PIN.GP0, self._register)
@@ -776,14 +777,15 @@ class Port:
     @property
     def size(self):
         """
-        calculate the port size using number of pins loaded in port
+        calculate the port size using number of pins available in port
         """
         return (2 ** len(self.pin)) - 1
 
     @property
     def direction(self):
         """
-        Read data in IODIR register
+        Read the direction of all ports in a specific port
+        if all pins do not have the same direction, return a binary representation of the direction of all pins
         """
         # TODO: Refactor to loop through Pins
         iodir = self._register.IODIR
@@ -793,11 +795,10 @@ class Port:
             return DIRECTION(0b0)
         else:
             return bin(iodir)
-
     @direction.setter
     def direction(self, direction):
         """
-        Write data to IODIR register
+        Set direction of all pin in a specific port
         """
         # TODO: Refactor to loop through Pins
         self._register.IODIR = direction.value * self.size
@@ -805,7 +806,8 @@ class Port:
     @property
     def value(self):
         """
-        Read data in GPIO register
+        Read the value of all ports in a specific port
+        if all pins do not have the same state, return a binary representation of the state of all pins
         """
         # TODO: Refactor to loop through Pins
         if self.direction == DIRECTION.IN:
@@ -814,11 +816,10 @@ class Port:
         else:
             state = self._register.OLAT
             return bin(state)
-
     @value.setter
     def value(self, state):
         """
-        Write data to GPIO register
+        Set the state of all pins in a specific port
         """
         # TODO: Refactor to loop through Pins
         if isinstance(state, STATE):
@@ -856,12 +857,16 @@ class GPIO:
         Set value of all 16 GPIO Pins available on MCP23018 at once
     """
     def __init__(self, device):
+        """
+        Load MCP23018 Parent instance into private property
+        Load all available ports into into public property
+        """
         self._device = device
         self.load_ports()
     
     def load_ports(self):
         """
-        Load the port dictionary with each port defined in ENUM PORT
+        Create a new port for each PORT in enum and load into local port dictionary
         """
         self.port = {}
         for port in PORT:
@@ -926,13 +931,13 @@ class MCP23018:
         """
         Parameters
         __________
-        RESET_PIN: RESET_PIN
-            See RESET Attribute on MCP23018 Class
+        RESET_Pin: RESET_PIN
+            See RESET Property on MCP23018 Class
         I2C_Interface: I2C
-            See I2C Attribute on MCP23018 Class
+            See I2C Property on MCP23018 Class
         I2C_Address: I2C_ADDRESS_RANGE.ONE
             MCP23018 I2C Slave Address 
-            See Address Attribute on I2C Class
+            See Address Property on I2C Class
         """
         self.RESET = RESET_PIN(RESET_Pin)
         self.I2C = I2C(I2C_Interface, I2C_Address)
