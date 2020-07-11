@@ -1,12 +1,15 @@
 from enum import Enum, auto
 import time
 
+from ENUMS import DIRECTION, STATE
 
 # TODO: Refactor MCP2221; Implement standard I2C Class
 class I2C:
     """
-    Description object represented by class
-
+    MCP23018 I2C Slave Clock:
+        100 kHz
+        400 kHz
+        3.4 MHz
     ...
     Attributes
     __________
@@ -66,35 +69,21 @@ class RESET_PIN:
     External device GPIO Pin connected to the RESET pin on MCP23018
     """
     def __init__(self, reset_pin):
-        self._gpio = reset_pin
-        self._state = STATE.HIGH
+        self._pin = reset_pin
         self.debug = False
 
     @property
     def value(self):
-        return self._state
+        return self._pin.value
     @value.setter
     def value(self, value):
-        if value == STATE.HIGH:
-            self._gpio.value = True
-            self._state = STATE.HIGH
-        if value == STATE.LOW:
-            self._gpio.value = False
-            self._state = STATE.LOW
+        self._pin.value = value
         self._log(value)
     
     def _log(self, state):
         if self.debug:
             print("RESET - State: ", state)
         return
-
-class DIRECTION(Enum):
-    IN = 0b1
-    OUT = 0b0
-
-class STATE(Enum):
-    HIGH = 0b1
-    LOW = 0b0
 
 class I2C_ADDRESS_RANGE(Enum):
     """
@@ -628,8 +617,6 @@ class Configuration:
         """
         self._device.registers.Bank = BANK.ZERO
     
-
-
 class Pin:
     """
     A class used to represent an GPIO Ping available on MCP23018
